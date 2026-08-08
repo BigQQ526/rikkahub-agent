@@ -101,25 +101,25 @@ private object Capability {
 
 /** Friendly name for the row's "needed by:" subtitle. */
 private fun LocalToolOption.shortName(): String = when (this) {
-    LocalToolOption.Location -> "Location"
-    LocalToolOption.WifiInfo -> "WiFi info"
-    LocalToolOption.NotificationListener -> "Notification listener"
-    LocalToolOption.ScreenAutomation -> "Screen automation"
+    LocalToolOption.Location -> "定位"
+    LocalToolOption.WifiInfo -> "WiFi 信息"
+    LocalToolOption.NotificationListener -> "通知监听"
+    LocalToolOption.ScreenAutomation -> "屏幕自动化"
     LocalToolOption.Termux -> "Termux"
-    LocalToolOption.SpeechToText -> "Speech-to-text"
+    LocalToolOption.SpeechToText -> "语音转文字"
     LocalToolOption.Ssh -> "SSH"
-    LocalToolOption.TelegramBot -> "Telegram bot"
-    LocalToolOption.CronJobs -> "Cron jobs"
-    LocalToolOption.Workflows -> "Workflows"
-    LocalToolOption.Notification -> "Notification"
-    LocalToolOption.Files -> "Files"
-    LocalToolOption.Browser -> "Browser"
-    LocalToolOption.SmsSend -> "SMS send"
-    LocalToolOption.Wallpaper -> "Wallpaper"
-    LocalToolOption.Keystore -> "Keystore"
+    LocalToolOption.TelegramBot -> "Telegram 机器人"
+    LocalToolOption.CronJobs -> "定时任务"
+    LocalToolOption.Workflows -> "工作流"
+    LocalToolOption.Notification -> "通知"
+    LocalToolOption.Files -> "文件"
+    LocalToolOption.Browser -> "浏览器"
+    LocalToolOption.SmsSend -> "发送短信"
+    LocalToolOption.Wallpaper -> "壁纸"
+    LocalToolOption.Keystore -> "密钥库"
     LocalToolOption.Nfc -> "NFC"
-    LocalToolOption.ExternalStorage -> "External storage"
-    LocalToolOption.Archive -> "Archive (zip)"
+    LocalToolOption.ExternalStorage -> "外部存储"
+    LocalToolOption.Archive -> "压缩包 (zip)"
     else -> this::class.simpleName ?: "?"
 }
 
@@ -193,41 +193,41 @@ class DoctorChecks(
             capabilityRow(
                 id = "perm.notifications",
                 category = DoctorCategory.Permissions,
-                label = "Post-notifications permission",
+                label = "通知权限",
                 cap = Capability.Notifications,
                 enabled = enabled,
                 granted = Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
                     PermissionHelper.hasRuntime(context, listOf(Manifest.permission.POST_NOTIFICATIONS)),
-                grantedDetail = "Granted.",
-                missingDetail = "Required for foreground service notifications, tool approvals, and workflow alerts.",
-                fix = FixAction.OpenAppRoute("Open app permissions", AppRouteKey.SettingPermissions),
+                grantedDetail = "已授予。",
+                missingDetail = "前台服务通知、工具审批和工作流提醒需要此权限。",
+                fix = FixAction.OpenAppRoute("打开应用权限", AppRouteKey.SettingPermissions),
             )
         )
         add(
             capabilityRow(
                 id = "perm.location",
                 category = DoctorCategory.Permissions,
-                label = "Fine location permission",
+                label = "精确定位权限",
                 cap = Capability.FineLocation,
                 enabled = enabled,
                 granted = PermissionHelper.hasRuntime(context, listOf(Manifest.permission.ACCESS_FINE_LOCATION)),
-                grantedDetail = "Granted.",
-                missingDetail = "Needed for geofence triggers and reading WiFi SSID on Android 10+.",
-                fix = FixAction.OpenAppRoute("Open app permissions", AppRouteKey.SettingPermissions),
+                grantedDetail = "已授予。",
+                missingDetail = "地理围栏触发以及在 Android 10+ 上读取 WiFi SSID 需要此权限。",
+                fix = FixAction.OpenAppRoute("打开应用权限", AppRouteKey.SettingPermissions),
             )
         )
         add(
             capabilityRow(
                 id = "perm.battery_opt",
                 category = DoctorCategory.Permissions,
-                label = "Battery optimisation whitelist",
+                label = "电池优化白名单",
                 cap = Capability.BatteryWhitelist,
                 enabled = enabled,
                 granted = PermissionHelper.ignoresBatteryOptimizations(context),
-                grantedDetail = "App is whitelisted — background services run reliably.",
-                missingDetail = "Doze can kill the Telegram bot, cron jobs, and workflows.",
+                grantedDetail = "应用已在白名单中——后台服务可稳定运行。",
+                missingDetail = "系统休眠（Doze）可能杀死 Telegram 机器人、定时任务和工作流。",
                 fix = FixAction.OpenIntent(
-                    label = "Request whitelist",
+                    label = "申请白名单",
                     intent = PermissionHelper.requestIgnoreBatteryOptimizationsIntent(context),
                 ),
             )
@@ -236,14 +236,14 @@ class DoctorChecks(
             capabilityRow(
                 id = "perm.notification_listener",
                 category = DoctorCategory.Permissions,
-                label = "Notification Listener access",
+                label = "通知监听权限",
                 cap = Capability.NotificationListener,
                 enabled = enabled,
                 granted = PermissionHelper.hasNotificationListener(context),
-                grantedDetail = "Granted — listener can read notifications.",
-                missingDetail = "Not granted. The notification_received trigger and notification tools won't work.",
+                grantedDetail = "已授予——监听器可读取通知。",
+                missingDetail = "未授予。notification_received 触发器与通知相关工具将无法工作。",
                 fix = FixAction.OpenIntent(
-                    label = "Open settings",
+                    label = "打开设置",
                     intent = PermissionHelper.notificationListenerSettingsIntent(),
                 ),
             )
@@ -252,14 +252,14 @@ class DoctorChecks(
             capabilityRow(
                 id = "perm.accessibility",
                 category = DoctorCategory.Permissions,
-                label = "Accessibility Service",
+                label = "无障碍服务",
                 cap = Capability.Accessibility,
                 enabled = enabled,
                 granted = PermissionHelper.hasAccessibilityService(context),
-                grantedDetail = "Enabled in system settings.",
-                missingDetail = "Not enabled. take_screenshot, swipe, scroll, click_at, and gesture tools won't work.",
+                grantedDetail = "已在系统设置中启用。",
+                missingDetail = "未启用。take_screenshot、swipe、scroll、click_at 和手势工具将无法工作。",
                 fix = FixAction.OpenIntent(
-                    label = "Open settings",
+                    label = "打开设置",
                     intent = PermissionHelper.accessibilitySettingsIntent(),
                 ),
             )
@@ -269,14 +269,14 @@ class DoctorChecks(
                 capabilityRow(
                     id = "perm.all_files",
                     category = DoctorCategory.Permissions,
-                    label = "All-files access",
+                    label = "所有文件访问权限",
                     cap = Capability.AllFiles,
                     enabled = enabled,
                     granted = PermissionHelper.hasAllFilesAccess(context),
-                    grantedDetail = "Granted — file_read / file_write tools can reach any path.",
-                    missingDetail = "Not granted. File tools are restricted to scoped storage.",
+                    grantedDetail = "已授予——file_read / file_write 工具可访问任意路径。",
+                    missingDetail = "未授予。文件工具仅限于分区存储。",
                     fix = FixAction.OpenIntent(
-                        label = "Open settings",
+                        label = "打开设置",
                         intent = PermissionHelper.allFilesAccessIntent(context),
                     ),
                 )
@@ -287,13 +287,13 @@ class DoctorChecks(
             capabilityRow(
                 id = "perm.send_sms",
                 category = DoctorCategory.Permissions,
-                label = "Send-SMS permission",
+                label = "发送短信权限",
                 cap = Capability.SendSms,
                 enabled = enabled,
                 granted = PermissionHelper.hasRuntime(context, listOf(Manifest.permission.SEND_SMS)),
-                grantedDetail = "Granted.",
-                missingDetail = "send_sms tool needs this to send messages.",
-                fix = FixAction.OpenAppRoute("Open app permissions", AppRouteKey.SettingPermissions),
+                grantedDetail = "已授予。",
+                missingDetail = "send_sms 工具需要此权限来发送短信。",
+                fix = FixAction.OpenAppRoute("打开应用权限", AppRouteKey.SettingPermissions),
             )
         )
         // Previously-unchecked permissions, now covered. Each is tool-aware: it only WARNs when
@@ -304,26 +304,26 @@ class DoctorChecks(
             capabilityRow(
                 id = "perm.overlay",
                 category = DoctorCategory.Permissions,
-                label = "Display over other apps",
+                label = "在其他应用上层显示",
                 cap = Capability.Overlay,
                 enabled = enabled,
                 granted = android.provider.Settings.canDrawOverlays(context),
-                grantedDetail = "Granted.",
-                missingDetail = "The \"agent is working\" overlay can't be shown during screen automation.",
-                fix = FixAction.OpenAppRoute("Open app permissions", AppRouteKey.SettingPermissions),
+                grantedDetail = "已授予。",
+                missingDetail = "屏幕自动化期间无法显示\"正在工作\"悬浮层。",
+                fix = FixAction.OpenAppRoute("打开应用权限", AppRouteKey.SettingPermissions),
             )
         )
         add(
             capabilityRow(
                 id = "perm.write_settings",
                 category = DoctorCategory.Permissions,
-                label = "Modify system settings",
+                label = "修改系统设置",
                 cap = Capability.WriteSettings,
                 enabled = enabled,
                 granted = PermissionHelper.hasWriteSettings(context),
-                grantedDetail = "Granted.",
-                missingDetail = "set_brightness can't change screen brightness without it.",
-                fix = FixAction.OpenAppRoute("Open app permissions", AppRouteKey.SettingPermissions),
+                grantedDetail = "已授予。",
+                missingDetail = "没有此权限时 set_brightness 无法修改屏幕亮度。",
+                fix = FixAction.OpenAppRoute("打开应用权限", AppRouteKey.SettingPermissions),
             )
         )
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -331,13 +331,13 @@ class DoctorChecks(
                 capabilityRow(
                     id = "perm.bluetooth_connect",
                     category = DoctorCategory.Permissions,
-                    label = "Bluetooth Connect",
+                    label = "蓝牙连接",
                     cap = Capability.BluetoothConnect,
                     enabled = enabled,
                     granted = PermissionHelper.hasRuntime(context, listOf(Manifest.permission.BLUETOOTH_CONNECT)),
-                    grantedDetail = "Granted.",
-                    missingDetail = "Workflow Bluetooth triggers can't read paired-device state.",
-                    fix = FixAction.OpenAppRoute("Open app permissions", AppRouteKey.SettingPermissions),
+                    grantedDetail = "已授予。",
+                    missingDetail = "工作流的蓝牙触发器无法读取已配对设备状态。",
+                    fix = FixAction.OpenAppRoute("打开应用权限", AppRouteKey.SettingPermissions),
                 )
             )
         }
@@ -346,13 +346,13 @@ class DoctorChecks(
                 capabilityRow(
                     id = "perm.nearby_wifi",
                     category = DoctorCategory.Permissions,
-                    label = "Nearby WiFi devices",
+                    label = "附近 WiFi 设备",
                     cap = Capability.NearbyWifi,
                     enabled = enabled,
                     granted = PermissionHelper.hasRuntime(context, listOf(Manifest.permission.NEARBY_WIFI_DEVICES)),
-                    grantedDetail = "Granted.",
-                    missingDetail = "WiFi scan/info may be limited on Android 13+ without it.",
-                    fix = FixAction.OpenAppRoute("Open app permissions", AppRouteKey.SettingPermissions),
+                    grantedDetail = "已授予。",
+                    missingDetail = "没有此权限时，Android 13+ 上的 WiFi 扫描/信息可能受限。",
+                    fix = FixAction.OpenAppRoute("打开应用权限", AppRouteKey.SettingPermissions),
                 )
             )
         }
@@ -361,13 +361,13 @@ class DoctorChecks(
                 capabilityRow(
                     id = "perm.background_location",
                     category = DoctorCategory.Permissions,
-                    label = "Background location",
+                    label = "后台定位",
                     cap = Capability.BackgroundLocation,
                     enabled = enabled,
                     granted = PermissionHelper.hasRuntime(context, listOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION)),
-                    grantedDetail = "Granted.",
-                    missingDetail = "Geofence workflow triggers won't fire when the app is closed.",
-                    fix = FixAction.OpenAppRoute("Open app permissions", AppRouteKey.SettingPermissions),
+                    grantedDetail = "已授予。",
+                    missingDetail = "应用关闭后，地理围栏工作流触发器将无法触发。",
+                    fix = FixAction.OpenAppRoute("打开应用权限", AppRouteKey.SettingPermissions),
                 )
             )
         }
@@ -382,7 +382,7 @@ class DoctorChecks(
                         id = "perm.nfc_enabled",
                         category = DoctorCategory.Permissions,
                         label = "NFC",
-                        detail = "Device has no NFC hardware.",
+                        detail = "设备没有 NFC 硬件。",
                         severity = Severity.INFO,
                     )
                 )
@@ -392,13 +392,13 @@ class DoctorChecks(
                         category = DoctorCategory.Permissions,
                         label = "NFC",
                         detail = if (nfcNeeders.isEmpty())
-                            "NFC is turned off in system settings. Not required by any enabled tool."
+                            "NFC 已在系统设置中关闭。没有启用的工具需要它。"
                         else
-                            "NFC is turned off in system settings. Needed by: " +
+                            "NFC 已在系统设置中关闭。需要方：" +
                                 nfcNeeders.joinToString(", ") { it.shortName() } + ".",
                         severity = if (nfcNeeders.isEmpty()) Severity.INFO else Severity.WARN,
                         fix = if (nfcNeeders.isEmpty()) null else FixAction.OpenIntent(
-                            label = "Open NFC settings",
+                            label = "打开 NFC 设置",
                             intent = android.content.Intent(android.provider.Settings.ACTION_NFC_SETTINGS)
                                 .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK),
                         ),
@@ -409,7 +409,7 @@ class DoctorChecks(
                         id = "perm.nfc_enabled",
                         category = DoctorCategory.Permissions,
                         label = "NFC",
-                        detail = "NFC hardware present and enabled.",
+                        detail = "NFC 硬件存在且已启用。",
                         severity = Severity.OK,
                     )
                 )
@@ -445,8 +445,8 @@ class DoctorChecks(
         }
         val detail = when {
             granted -> grantedDetail
-            needers.isEmpty() -> "Not required by any enabled tool."
-            else -> "$missingDetail Needed by: ${needers.joinToString(", ") { it.shortName() }}."
+            needers.isEmpty() -> "没有启用的工具需要此项。"
+            else -> "$missingDetail 需要方：${needers.joinToString(", ") { it.shortName() }}。"
         }
         return DoctorCheck(
             id = id,
@@ -468,15 +468,15 @@ class DoctorChecks(
                 DoctorCheck(
                     id = "service.telegram_token",
                     category = DoctorCategory.Services,
-                    label = "Telegram bot token",
+                    label = "Telegram 机器人令牌",
                     // Don't render any portion of the token — Telegram bot tokens are
                     // formatted "<bot_id>:<secret>" and even the first 6 chars reveal the
                     // bot id, which an attacker could use to enumerate bot endpoints.
-                    detail = if (tg.token.isNotBlank()) "Token configured (${tg.token.length} chars, hidden)."
-                    else "Telegram bot is enabled but no token is set — the service will fail at startup.",
+                    detail = if (tg.token.isNotBlank()) "已配置令牌（${tg.token.length} 个字符，已隐藏）。"
+                    else "Telegram 机器人已启用但未设置令牌——服务启动时会失败。",
                     severity = if (tg.token.isNotBlank()) Severity.OK else Severity.FAIL,
                     fix = if (tg.token.isBlank())
-                        FixAction.OpenAppRoute("Open Telegram settings", AppRouteKey.SettingTelegram)
+                        FixAction.OpenAppRoute("打开 Telegram 设置", AppRouteKey.SettingTelegram)
                     else null,
                 )
             )
@@ -484,9 +484,9 @@ class DoctorChecks(
                 DoctorCheck(
                     id = "service.telegram_running",
                     category = DoctorCategory.Services,
-                    label = "Telegram bot foreground service",
-                    detail = if (TelegramBotService.isRunning) "Service is running."
-                    else "Service is stopped. Telegram messages won't reach the assistant. The watchdog will retry on the next 30-min health pass.",
+                    label = "Telegram 机器人前台服务",
+                    detail = if (TelegramBotService.isRunning) "服务正在运行。"
+                    else "服务已停止。Telegram 消息将无法到达助手。看门狗会在下一次 30 分钟健康检查时重试。",
                     severity = when {
                         TelegramBotService.isRunning -> Severity.OK
                         tg.token.isBlank() -> Severity.INFO  // token issue covers this
@@ -499,8 +499,8 @@ class DoctorChecks(
                 DoctorCheck(
                     id = "service.telegram_off",
                     category = DoctorCategory.Services,
-                    label = "Telegram bot",
-                    detail = "Disabled — that's fine if you don't use Telegram.",
+                    label = "Telegram 机器人",
+                    detail = "已禁用——如果不用 Telegram 就没问题。",
                     severity = Severity.INFO,
                 )
             )
@@ -512,19 +512,19 @@ class DoctorChecks(
                 DoctorCheck(
                     id = "service.accessibility_bound",
                     category = DoctorCategory.Services,
-                    label = "AccessibilityService bound",
+                    label = "无障碍服务已绑定",
                     detail = if (AccessibilityServiceHandle.isRunning())
-                        "Service object is alive — ${accNeeders.joinToString(", ") { it.shortName() }} can run."
+                        "服务对象存活——${accNeeders.joinToString(", ") { it.shortName() }} 可运行。"
                     else if (PermissionHelper.hasAccessibilityService(context))
-                        "Enabled in settings but not bound (Android killed the service or it hasn't started yet). Toggle it off and on again."
+                        "已在设置中启用但未绑定（Android 杀死了服务或服务尚未启动）。请先关闭再重新打开。"
                     else
-                        "Not enabled. Required by: ${accNeeders.joinToString(", ") { it.shortName() }}.",
+                        "未启用。需要方：${accNeeders.joinToString(", ") { it.shortName() }}。",
                     severity = when {
                         AccessibilityServiceHandle.isRunning() -> Severity.OK
                         else -> Severity.WARN
                     },
                     fix = if (!AccessibilityServiceHandle.isRunning()) FixAction.OpenIntent(
-                        label = "Open settings",
+                        label = "打开设置",
                         intent = PermissionHelper.accessibilitySettingsIntent(),
                     ) else null,
                 )
@@ -537,19 +537,19 @@ class DoctorChecks(
                 DoctorCheck(
                     id = "service.notification_listener_bound",
                     category = DoctorCategory.Services,
-                    label = "NotificationListener bound",
+                    label = "通知监听器已绑定",
                     detail = if (NotificationListenerHandle.isBound())
-                        "Listener is bound — ${nlNeeders.joinToString(", ") { it.shortName() }} can run."
+                        "监听器已绑定——${nlNeeders.joinToString(", ") { it.shortName() }} 可运行。"
                     else if (PermissionHelper.hasNotificationListener(context))
-                        "Granted but not currently bound. Toggle it off and on in settings."
+                        "已授予但当前未绑定。请在设置中先关闭再打开。"
                     else
-                        "Not granted. Required by: ${nlNeeders.joinToString(", ") { it.shortName() }}.",
+                        "未授予。需要方：${nlNeeders.joinToString(", ") { it.shortName() }}。",
                     severity = when {
                         NotificationListenerHandle.isBound() -> Severity.OK
                         else -> Severity.WARN
                     },
                     fix = if (!NotificationListenerHandle.isBound()) FixAction.OpenIntent(
-                        label = "Open settings",
+                        label = "打开设置",
                         intent = PermissionHelper.notificationListenerSettingsIntent(),
                     ) else null,
                 )
@@ -583,15 +583,15 @@ class DoctorChecks(
                 DoctorCheck(
                     id = "assistant.default",
                     category = DoctorCategory.AssistantInfo,
-                    label = "Default assistant",
+                    label = "默认助手",
                     detail = if (assistants.isEmpty())
-                        "No assistants configured — the app won't be able to start a conversation."
+                        "未配置任何助手——应用将无法开始对话。"
                     else
-                        "\"${defaultAssistant.name.ifBlank { "(unnamed)" }}\" " +
-                        "(id: ${defaultAssistant.id.toString().take(8)}…). " +
-                        "Used for new chats, cron jobs, and Telegram when no override is set.",
+                        "\"${defaultAssistant.name.ifBlank { "(未命名)" }}\" " +
+                        "（id: ${defaultAssistant.id.toString().take(8)}…）。" +
+                        "未设置覆盖时，新聊天、定时任务和 Telegram 使用此助手。",
                     severity = if (assistants.isEmpty()) Severity.WARN else Severity.INFO,
-                    fix = FixAction.OpenAppRoute("Open Assistants", AppRouteKey.Assistant),
+                    fix = FixAction.OpenAppRoute("打开助手", AppRouteKey.Assistant),
                 )
             )
 
@@ -600,10 +600,10 @@ class DoctorChecks(
                 DoctorCheck(
                     id = "assistant.count",
                     category = DoctorCategory.AssistantInfo,
-                    label = "Assistant count",
-                    detail = "${assistants.size} assistant(s) configured.",
+                    label = "助手数量",
+                    detail = "已配置 ${assistants.size} 个助手。",
                     severity = Severity.INFO,
-                    fix = FixAction.OpenAppRoute("Open Assistants", AppRouteKey.Assistant),
+                    fix = FixAction.OpenAppRoute("打开助手", AppRouteKey.Assistant),
                 )
             )
 
@@ -620,18 +620,18 @@ class DoctorChecks(
                     DoctorCheck(
                         id = "assistant.telegram_override",
                         category = DoctorCategory.AssistantInfo,
-                        label = "Telegram bot assistant override",
+                        label = "Telegram 机器人助手覆盖",
                         detail = when {
                             tgAssistant != null ->
-                                "Telegram inbound messages route to \"${tgAssistant.name.ifBlank { "(unnamed)" }}\" " +
-                                "(id: ${tgAssistant.id.toString().take(8)}…) — overriding the global default."
+                                "Telegram 入站消息路由到 \"${tgAssistant.name.ifBlank { "(未命名)" }}\" " +
+                                "（id: ${tgAssistant.id.toString().take(8)}…）——覆盖全局默认设置。"
                             else ->
-                                "Telegram assistant override is set (id: ${tg.assistantId.take(8)}…) but no matching " +
-                                "assistant was found. Messages will fall back to the global default."
+                                "已设置 Telegram 助手覆盖（id: ${tg.assistantId.take(8)}…），但未找到匹配的 " +
+                                "助手。消息将回退到全局默认助手。"
                         },
                         severity = if (tgAssistant != null) Severity.INFO else Severity.WARN,
                         fix = if (tgAssistant == null)
-                            FixAction.OpenAppRoute("Open Telegram settings", AppRouteKey.SettingTelegram)
+                            FixAction.OpenAppRoute("打开 Telegram 设置", AppRouteKey.SettingTelegram)
                         else null,
                     )
                 )
@@ -648,11 +648,11 @@ class DoctorChecks(
             DoctorCheck(
                 id = "db.version",
                 category = DoctorCategory.Database,
-                label = "Database schema version",
+                label = "数据库架构版本",
                 // Room refuses to open the DB unless the stored version matches the compiled schema;
                 // if we got here, version is the live schema version (migrations ran successfully).
-                detail = if (version > 0) "v$version — migrations completed, schema is consistent."
-                else "Couldn't read DB version — Room may have failed to open the database.",
+                detail = if (version > 0) "v$version——迁移完成，架构一致。"
+                else "无法读取数据库版本——Room 可能打开数据库失败。",
                 severity = if (version > 0) Severity.OK else Severity.WARN,
             )
         )
@@ -673,23 +673,23 @@ class DoctorChecks(
             DoctorCheck(
                 id = "db.integrity",
                 category = DoctorCategory.Database,
-                label = "DB integrity_check",
+                label = "数据库完整性检查",
                 detail = when (integrity) {
-                    null -> "Integrity check timed out or failed."
-                    "ok" -> "PRAGMA integrity_check returned ok."
-                    else -> "Integrity check returned: $integrity"
+                    null -> "完整性检查超时或失败。"
+                    "ok" -> "PRAGMA integrity_check 返回正常。"
+                    else -> "完整性检查返回：$integrity"
                 },
                 severity = if (integrity == "ok") Severity.OK else Severity.FAIL,
                 fix = if (mentionsFts) FixAction.AutoFix(
-                    label = "Rebuild search index",
+                    label = "重建搜索索引",
                     run = {
                         runCatching {
                             val n = conversationRepository.repairAndRebuildIndexes()
-                            AutoFixResult(ok = true, message = "Rebuilt message_fts from $n conversation(s).")
+                            AutoFixResult(ok = true, message = "已从 $n 个对话重建 message_fts。")
                         }.getOrElse {
                             AutoFixResult(
                                 ok = false,
-                                message = "Repair failed: ${it::class.simpleName}: ${it.message ?: "?"}",
+                                message = "修复失败：${it::class.simpleName}: ${it.message ?: "?"}",
                             )
                         }
                     },
@@ -704,11 +704,11 @@ class DoctorChecks(
                 DoctorCheck(
                     id = "db.workflows",
                     category = DoctorCategory.Database,
-                    label = "Workflows",
-                    detail = "${all.size} total, $enabled enabled.",
+                    label = "工作流",
+                    detail = "共 ${all.size} 个，已启用 $enabled 个。",
                     severity = Severity.INFO,
                     fix = if (all.isNotEmpty())
-                        FixAction.OpenAppRoute("Open Workflows", AppRouteKey.SettingWorkflows)
+                        FixAction.OpenAppRoute("打开工作流", AppRouteKey.SettingWorkflows)
                     else null,
                 )
             )
@@ -721,11 +721,11 @@ class DoctorChecks(
                 DoctorCheck(
                     id = "db.scheduled_jobs",
                     category = DoctorCategory.Database,
-                    label = "Scheduled jobs",
-                    detail = "${all.size} total, $enabled enabled.",
+                    label = "定时任务",
+                    detail = "共 ${all.size} 个，已启用 $enabled 个。",
                     severity = Severity.INFO,
                     fix = if (all.isNotEmpty())
-                        FixAction.OpenAppRoute("Open Scheduled jobs", AppRouteKey.SettingScheduledJobs)
+                        FixAction.OpenAppRoute("打开定时任务", AppRouteKey.SettingScheduledJobs)
                     else null,
                 )
             )
@@ -737,11 +737,11 @@ class DoctorChecks(
                 DoctorCheck(
                     id = "db.stranded_runs",
                     category = DoctorCategory.Database,
-                    label = "Stranded scheduled-job runs",
+                    label = "滞留的定时任务运行",
                     detail = if (stranded.isEmpty())
-                        "None. Worker has been finishing all runs cleanly."
+                        "无。Worker 一直正常完成所有运行。"
                     else
-                        "${stranded.size} run(s) started > 30 min ago and never reported back. Likely process kill mid-run.",
+                        "${stranded.size} 个运行在 30 分钟前启动且未回报。可能是运行中途进程被杀。",
                     severity = if (stranded.isEmpty()) Severity.OK else Severity.WARN,
                 )
             )
@@ -757,14 +757,14 @@ class DoctorChecks(
                     DoctorCheck(
                         id = "storage.granted_directories",
                         category = DoctorCategory.Database,
-                        label = "Granted directories",
+                        label = "已授权目录",
                         detail = when {
                             !externalStorageEnabled && grants.isEmpty() ->
-                                "External Storage tool not enabled. Not required."
+                                "外部存储工具未启用。不需要。"
                             grants.isEmpty() ->
-                                "No directories granted yet. Call grant_directory_access to add one."
+                                "尚未授权任何目录。调用 grant_directory_access 添加一个。"
                             else ->
-                                "${grants.size} directory(ies) granted: " +
+                                "已授权 ${grants.size} 个目录：" +
                                     grants.joinToString(", ") { it.displayName } + "."
                         },
                         severity = if (externalStorageEnabled && grants.isNotEmpty())
@@ -803,10 +803,10 @@ class DoctorChecks(
                 DoctorCheck(
                     id = "net.providers",
                     category = DoctorCategory.Network,
-                    label = "LLM providers configured",
-                    detail = "$configured provider(s) configured (API key set, AICore enabled, or local model loaded) out of ${provs.size} total.",
+                    label = "已配置的 LLM 提供商",
+                    detail = "共 ${provs.size} 个提供商，已配置 $configured 个（已设置 API key、已启用 AICore 或已加载本地模型）。",
                     severity = if (configured > 0) Severity.OK else Severity.WARN,
-                    fix = FixAction.OpenAppRoute("Open Providers", AppRouteKey.SettingProvider),
+                    fix = FixAction.OpenAppRoute("打开提供商", AppRouteKey.SettingProvider),
                 )
             )
         }
@@ -822,18 +822,18 @@ class DoctorChecks(
                 val accel = prefs.acceleratorFlow(me.rerere.locallm.LocalRuntime.LiteRT).first()
                 val forceCpu = prefs.forceCpu(me.rerere.locallm.LocalRuntime.LiteRT)
                 val detail = when {
-                    accel == null -> "Not probed yet. The accelerator is decided on the first model load."
+                    accel == null -> "尚未探测。加速器在首次加载模型时确定。"
                     forceCpu && accel == "CPU" ->
-                        "CPU (Try-GPU toggle off in Settings -> Local LiteRT). " +
-                            "Flip it on to retry the device's GPU on the next load."
+                        "CPU（设置 → 本地 LiteRT 中已关闭“尝试 GPU”开关）。" +
+                            "打开该开关可在下次加载时重试设备的 GPU。"
                     accel == "CPU" ->
-                        "CPU (fallback: the GPU delegate failed to initialise on this device, " +
-                            "likely an MLDrift issue. Tap 'Re-detect' in Settings -> Local LiteRT " +
-                            "to retry with a fresh probe.)"
-                    accel == "GPU" -> "GPU (OpenCL or OpenGL, picked by LiteRT's internal probe)."
-                    accel == "QNN" || accel == "NPU" -> "NPU (Qualcomm QNN delegate)."
-                    accel == "NNAPI" -> "NNAPI."
-                    else -> "Backend label: $accel"
+                        "CPU（回退：GPU 代理在此设备上初始化失败，" +
+                            "可能是 MLDrift 问题。点击设置 → 本地 LiteRT 中的“重新检测”" +
+                            "以重新探测。）"
+                    accel == "GPU" -> "GPU（OpenCL 或 OpenGL，由 LiteRT 内部探测选择）。"
+                    accel == "QNN" || accel == "NPU" -> "NPU（Qualcomm QNN 代理）。"
+                    accel == "NNAPI" -> "NNAPI。"
+                    else -> "后端标签：$accel"
                 }
                 val severity = when {
                     accel == null -> Severity.INFO
@@ -844,11 +844,11 @@ class DoctorChecks(
                     DoctorCheck(
                         id = "net.litert_accel",
                         category = DoctorCategory.Network,
-                        label = "LiteRT accelerator",
+                        label = "LiteRT 加速器",
                         detail = detail,
                         severity = severity,
                         fix = FixAction.OpenAppRoute(
-                            "Open Local LiteRT",
+                            "打开本地 LiteRT",
                             AppRouteKey.SettingProvider,
                         ),
                     )
@@ -870,12 +870,12 @@ class DoctorChecks(
                         DoctorCheck(
                             id = "net.litert_perf",
                             category = DoctorCategory.Network,
-                            label = "LiteRT performance",
-                            detail = "Last-known per-model rates (character-based estimate, " +
-                                "~10% accurate for English text):\n$detail",
+                            label = "LiteRT 性能",
+                            detail = "各模型最近一次的速度（基于字符的估算，" +
+                                "英文文本约 10% 准确率）：\n$detail",
                             severity = Severity.INFO,
                             fix = FixAction.OpenAppRoute(
-                                "Open Local LiteRT",
+                                "打开本地 LiteRT",
                                 AppRouteKey.SettingProvider,
                             ),
                         )
@@ -894,18 +894,18 @@ class DoctorChecks(
                         DoctorCheck(
                             id = "net.litert_vision",
                             category = DoctorCategory.Network,
-                            label = "LiteRT vision encoder",
-                            detail = "Vision encoder unavailable on this device for: " +
+                            label = "LiteRT 视觉编码器",
+                            detail = "此设备上无法使用视觉编码器的模型：" +
                                 visionUnavailable.joinToString(", ") +
-                                ". These multimodal models run in text-only mode — chat works, " +
-                                "image inputs don't. Often fixed by a future LiteRT-LM SDK update " +
-                                "(the OpenGL fallback path's CreateSharedMemoryManager is " +
-                                "currently UNIMPLEMENTED upstream). Tap 'Re-try vision' next to " +
-                                "the model in Settings -> Local LiteRT after a GPU driver update " +
-                                "to clear the flag.",
+                                "。这些多模态模型以纯文本模式运行——聊天可用，" +
+                                "图像输入不可用。通常可由未来的 LiteRT-LM SDK 更新修复" +
+                                "（OpenGL 回退路径的 CreateSharedMemoryManager " +
+                                "在上游尚未实现）。点击模型旁边的“重试视觉”" +
+                                "（在 GPU 驱动更新后，于设置 → 本地 LiteRT 中）" +
+                                "以清除该标记。",
                             severity = Severity.WARN,
                             fix = FixAction.OpenAppRoute(
-                                "Open Local LiteRT",
+                                "打开本地 LiteRT",
                                 AppRouteKey.SettingProvider,
                             ),
                         )
@@ -926,19 +926,19 @@ class DoctorChecks(
                 val installed = prefs.installedModels(me.rerere.locallm.LocalRuntime.LlamaCpp)
                 val status = llamaCppModelStatus(installed)
                 val detail = when {
-                    status.total == 0 -> "No llama.cpp models installed."
+                    status.total == 0 -> "未安装 llama.cpp 模型。"
                     status.missing.isEmpty() ->
-                        "${status.total} model(s) installed, all present on disk."
+                        "已安装 ${status.total} 个模型，磁盘上全部存在。"
                     else ->
-                        "${status.missing.size} of ${status.total} installed llama.cpp model(s) " +
-                            "missing from disk: ${status.missing.joinToString(", ")}. The file may " +
-                            "have been moved, deleted, or its storage volume unmounted."
+                        "${status.missing.size} / ${status.total} 个已安装的 llama.cpp 模型" +
+                            "在磁盘上缺失：${status.missing.joinToString(", ")}。文件可能" +
+                            "已被移动、删除，或其存储卷已卸载。"
                 }
                 add(
                     DoctorCheck(
                         id = "net.llamacpp_models",
                         category = DoctorCategory.Network,
-                        label = "llama.cpp models",
+                        label = "llama.cpp 模型",
                         detail = detail,
                         severity = when {
                             status.total == 0 -> Severity.INFO
@@ -946,7 +946,7 @@ class DoctorChecks(
                             else -> Severity.WARN
                         },
                         fix = if (status.missing.isNotEmpty()) FixAction.OpenAppRoute(
-                            "Open Local llama.cpp",
+                            "打开本地 llama.cpp",
                             AppRouteKey.SettingProvider,
                         ) else null,
                     )
@@ -961,9 +961,9 @@ class DoctorChecks(
             DoctorCheck(
                 id = "net.dns",
                 category = DoctorCategory.Network,
-                label = "DNS resolution",
-                detail = if (dnsOk) "dns.google resolved within 2.5 s."
-                else "DNS resolution failed or timed out. NetworkChangeMonitor evicts the OkHttp pool on network changes — if this stays red, check connectivity.",
+                label = "DNS 解析",
+                detail = if (dnsOk) "dns.google 在 2.5 秒内解析成功。"
+                else "DNS 解析失败或超时。NetworkChangeMonitor 会在网络变化时清除 OkHttp 连接池——如果此项持续红色，请检查网络连接。",
                 severity = if (dnsOk) Severity.OK else Severity.WARN,
             )
         )
@@ -983,9 +983,9 @@ class DoctorChecks(
             DoctorCheck(
                 id = "termux.installed",
                 category = DoctorCategory.Termux,
-                label = "Termux installed",
-                detail = if (termuxInstalled) "com.termux is installed on this device."
-                else "Termux not installed. Required by: ${needers.joinToString(", ") { it.shortName() }}.",
+                label = "已安装 Termux",
+                detail = if (termuxInstalled) "此设备已安装 com.termux。"
+                else "未安装 Termux。需要方：${needers.joinToString(", ") { it.shortName() }}。",
                 severity = if (termuxInstalled) Severity.OK else Severity.WARN,
             )
         )
@@ -998,9 +998,9 @@ class DoctorChecks(
                 DoctorCheck(
                     id = "termux.run_command",
                     category = DoctorCategory.Termux,
-                    label = "Termux RUN_COMMAND permission",
-                    detail = if (runCommandPerm) "Granted — RikkaHub can dispatch shell commands to Termux."
-                    else "Not granted. Re-toggle the Termux row in Local Tools to see the post-grant dialog.",
+                    label = "Termux RUN_COMMAND 权限",
+                    detail = if (runCommandPerm) "已授予——RikkaHub 可以向 Termux 发送 shell 命令。"
+                    else "未授予。请在本地工具中重新开关 Termux 选项以查看授权后对话框。",
                     severity = if (runCommandPerm) Severity.OK else Severity.WARN,
                 )
             )
@@ -1036,14 +1036,14 @@ class DoctorChecks(
             DoctorCheck(
                 id = "browser.profile_dir_writable",
                 category = DoctorCategory.Permissions,
-                label = "Browser profile directory",
+                label = "浏览器配置目录",
                 detail = when {
-                    ok && browserNeeded -> "${profileDir.absolutePath} exists and is writable — cookies persist."
-                    ok -> "${profileDir.absolutePath} exists. Not required by any enabled tool."
-                    !exists && browserNeeded -> "Directory does not exist. Cookies and localStorage won't persist. Needed by: Browser."
-                    !exists -> "Directory does not exist. Not required by any enabled tool."
-                    !writable && browserNeeded -> "Directory exists but is not writable. Needed by: Browser."
-                    else -> "Directory exists but is not writable."
+                    ok && browserNeeded -> "${profileDir.absolutePath} 存在且可写——Cookie 可持久保存。"
+                    ok -> "${profileDir.absolutePath} 存在。没有启用的工具需要它。"
+                    !exists && browserNeeded -> "目录不存在。Cookie 和 localStorage 将无法持久保存。需要方：浏览器。"
+                    !exists -> "目录不存在。没有启用的工具需要它。"
+                    !writable && browserNeeded -> "目录存在但不可写。需要方：浏览器。"
+                    else -> "目录存在但不可写。"
                 },
                 severity = when {
                     ok -> Severity.OK
@@ -1051,15 +1051,15 @@ class DoctorChecks(
                     else -> Severity.INFO
                 },
                 fix = if (!ok && browserNeeded) FixAction.AutoFix(
-                    label = "Create directory",
+                    label = "创建目录",
                     run = {
                         val created = runCatching { profileDir.mkdirs() }.getOrDefault(false)
                         val nowOk = profileDir.exists() && profileDir.canWrite()
                         AutoFixResult(
                             ok = nowOk,
-                            message = if (nowOk) "Created ${profileDir.absolutePath}."
-                            else if (created) "Directory created but still not writable — check storage permission."
-                            else "mkdirs() returned false; underlying storage may be read-only.",
+                            message = if (nowOk) "已创建 ${profileDir.absolutePath}。"
+                            else if (created) "目录已创建但仍不可写——请检查存储权限。"
+                            else "mkdirs() 返回 false；底层存储可能为只读。",
                         )
                     },
                 ) else null,
@@ -1074,14 +1074,14 @@ class DoctorChecks(
             val snapshot = runCatching { prefs.snapshotBlocking() }.getOrDefault(BrowserToolDefaults.DEFAULT_ENABLED)
             val onWriteTools = BrowserToolDefaults.WRITE_TOOLS.filter { snapshot[it] == true }
             val detail = if (onWriteTools.isEmpty())
-                "Live count of side-effecting browser tools enabled: 0. None of the write tools are switched on."
+                "当前已启用的有副作用浏览器工具数：0。所有写入类工具均未开启。"
             else
-                "Live count of side-effecting browser tools enabled: ${onWriteTools.size} (${onWriteTools.joinToString(", ") { it.removePrefix("browser_") }})."
+                "当前已启用的有副作用浏览器工具数：${onWriteTools.size}（${onWriteTools.joinToString(", ") { it.removePrefix("browser_") }}）。"
             add(
                 DoctorCheck(
                     id = "browser.write_tools_status",
                     category = DoctorCategory.Permissions,
-                    label = "Browser write tools enabled",
+                    label = "浏览器写入工具已启用",
                     detail = detail,
                     severity = Severity.INFO,
                 )
@@ -1098,15 +1098,15 @@ class DoctorChecks(
             DoctorCheck(
                 id = "maint.cache_size",
                 category = DoctorCategory.Maintenance,
-                label = "App cache size",
-                detail = "Cache is using ${humanBytes(cacheBytes)}. " +
-                    if (cacheBytes > 200L * 1024 * 1024) "Consider clearing — over 200 MB." else "Within normal range.",
+                label = "应用缓存大小",
+                detail = "缓存占用 ${humanBytes(cacheBytes)}。 " +
+                    if (cacheBytes > 200L * 1024 * 1024) "建议清理——已超过 200 MB。" else "处于正常范围。",
                 severity = if (cacheBytes > 500L * 1024 * 1024) Severity.WARN else Severity.OK,
                 fix = FixAction.AutoFix(
-                    label = "Clear cache",
+                    label = "清理缓存",
                     run = {
                         val freed = clearDirectoryContents(context.cacheDir)
-                        AutoFixResult(ok = true, message = "Freed ${humanBytes(freed)}.")
+                        AutoFixResult(ok = true, message = "已释放 ${humanBytes(freed)}。")
                     },
                 ),
             )
@@ -1119,7 +1119,7 @@ class DoctorChecks(
         DoctorCheck(
             id = "diag.app",
             category = DoctorCategory.Diagnostics,
-            label = "App build",
+            label = "应用构建",
             detail = "RikkaHub-agent ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE}) — debug=${BuildConfig.DEBUG}",
             severity = Severity.INFO,
         ),
@@ -1133,22 +1133,22 @@ class DoctorChecks(
         DoctorCheck(
             id = "diag.runtime",
             category = DoctorCategory.Diagnostics,
-            label = "Runtime",
+            label = "运行时",
             detail = run {
                 val rt = Runtime.getRuntime()
                 val freeMb = rt.freeMemory() / (1024 * 1024)
                 val totalMb = rt.totalMemory() / (1024 * 1024)
                 val maxMb = rt.maxMemory() / (1024 * 1024)
-                "Heap: $freeMb MB free of $totalMb MB ($maxMb MB max)"
+                "堆内存：可用 $freeMb MB / 共 $totalMb MB（上限 $maxMb MB）"
             },
             severity = Severity.INFO,
         ),
         DoctorCheck(
             id = "diag.enabled_tools",
             category = DoctorCategory.Diagnostics,
-            label = "Enabled tools across assistants",
-            detail = if (enabled.isEmpty()) "No local tools enabled — agentic features won't work."
-            else "${enabled.size} tool group(s) enabled.",
+            label = "各助手启用的工具",
+            detail = if (enabled.isEmpty()) "未启用任何本地工具——智能体功能将无法工作。"
+            else "已启用 ${enabled.size} 个工具组。",
             severity = if (enabled.isEmpty()) Severity.WARN else Severity.INFO,
         ),
     )

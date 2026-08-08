@@ -137,7 +137,7 @@ fun DoctorScreen(vm: DoctorViewModel = koinViewModel()) {
                                             }.onFailure {
                                                 scope.launch {
                                                     snackbar.showSnackbar(
-                                                        "Could not open: ${it.message ?: it::class.simpleName}"
+                                                        "无法打开：${it.message ?: it::class.simpleName}"
                                                     )
                                                 }
                                             }
@@ -176,10 +176,10 @@ private fun SummaryCard(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly,
         ) {
-            CountPill("Failures", counts[Severity.FAIL] ?: 0, Severity.FAIL)
-            CountPill("Warnings", counts[Severity.WARN] ?: 0, Severity.WARN)
-            CountPill("OK", counts[Severity.OK] ?: 0, Severity.OK)
-            CountPill("Info", counts[Severity.INFO] ?: 0, Severity.INFO)
+            CountPill("失败", counts[Severity.FAIL] ?: 0, Severity.FAIL)
+            CountPill("警告", counts[Severity.WARN] ?: 0, Severity.WARN)
+            CountPill("正常", counts[Severity.OK] ?: 0, Severity.OK)
+            CountPill("信息", counts[Severity.INFO] ?: 0, Severity.INFO)
         }
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             Button(
@@ -275,5 +275,5 @@ private fun routeFor(key: AppRouteKey): Screen = when (key) {
 
 private fun copyToClipboard(ctx: Context, text: String) {
     val cm = ctx.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager ?: return
-    cm.setPrimaryClip(ClipData.newPlainText("RikkaHub diagnostic report", text))
+    cm.setPrimaryClip(ClipData.newPlainText("RikkaHub 诊断报告", text))
 }

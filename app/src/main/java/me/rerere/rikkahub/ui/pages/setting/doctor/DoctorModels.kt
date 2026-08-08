@@ -30,14 +30,14 @@ data class DoctorCheck(
 enum class Severity { OK, INFO, WARN, FAIL }
 
 enum class DoctorCategory(val displayName: String) {
-    Permissions("Permissions"),
-    Services("Background services"),
-    AssistantInfo("Active assistant"),
-    Database("Database"),
-    Network("Network & providers"),
-    Termux("Termux integration"),
-    Maintenance("Maintenance"),
-    Diagnostics("Diagnostics"),
+    Permissions("权限"),
+    Services("后台服务"),
+    AssistantInfo("当前助手"),
+    Database("数据库"),
+    Network("网络与提供商"),
+    Termux("Termux 集成"),
+    Maintenance("维护"),
+    Diagnostics("诊断"),
 }
 
 /**
