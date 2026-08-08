@@ -13,6 +13,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Slider
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -90,6 +92,59 @@ internal fun PromptSettingsPage(settings: Settings, vm: SettingVM, contentPaddin
                 onPromptChange = { vm.updateSettings(settings.copy(compressPrompt = it)) },
                 onResetPrompt = { vm.updateSettings(settings.copy(compressPrompt = DEFAULT_COMPRESS_PROMPT)) },
             )
+        }
+        // 自动压缩（省Token）：会话超阈值自动压缩旧历史
+        item {
+            CardGroup(title = { Text(stringResource(R.string.setting_auto_compress_title)) }) {
+                item(
+                    headlineContent = { Text(stringResource(R.string.setting_auto_compress_enable)) },
+                    supportingContent = { Text(stringResource(R.string.setting_auto_compress_enable_desc)) },
+                    trailingContent = {
+                        Switch(
+                            checked = settings.autoCompressEnabled,
+                            onCheckedChange = { vm.updateSettings(settings.copy(autoCompressEnabled = it)) },
+                        )
+                    },
+                )
+                item(
+                    headlineContent = {
+                        Column {
+                            Text(stringResource(R.string.setting_auto_compress_threshold))
+                            Text(
+                                text = stringResource(R.string.setting_auto_compress_threshold_value, settings.autoCompressThreshold),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                    },
+                    supportingContent = {
+                        Slider(
+                            value = settings.autoCompressThreshold.toFloat(),
+                            onValueChange = { vm.updateSettings(settings.copy(autoCompressThreshold = it.toInt())) },
+                            valueRange = 5000f..100000f,
+                        )
+                    },
+                )
+                item(
+                    headlineContent = {
+                        Column {
+                            Text(stringResource(R.string.setting_auto_compress_keep_recent))
+                            Text(
+                                text = stringResource(R.string.setting_auto_compress_keep_recent_value, settings.autoCompressKeepRecent),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                    },
+                    supportingContent = {
+                        Slider(
+                            value = settings.autoCompressKeepRecent.toFloat(),
+                            onValueChange = { vm.updateSettings(settings.copy(autoCompressKeepRecent = it.toInt())) },
+                            valueRange = 4f..100f,
+                        )
+                    },
+                )
+            }
         }
     }
 }

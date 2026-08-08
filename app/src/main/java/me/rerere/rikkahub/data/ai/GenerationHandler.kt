@@ -376,6 +376,14 @@ class GenerationHandler(
 
             // Skip generation if we have approved/denied tool calls to handle
             if (pendingTools.isEmpty()) {
+                // 循环内熔断：每轮生成前检查 token 估算，超硬上限时压缩最早的非工具链历史，
+                // 防止工具循环把上下文无限撑大（默认 12 万 token 硬上限，可在设置里调）。
+                val loopTokens = messages.sumOf { estimateTokens(it) }
+                if (loopTokens > settings.autoCompressHardLimitTokens) {
+                    Log.w(TAG, "generateText: token hard-limit (${settings.autoCompressHardLimitTokens}) hit at step #$stepIndex ($loopTokens tokens); compressing oldest history")
+                    messages = compressMessagesForLoop(messages, keepRecent = settings.autoCompressKeepRecent)
+                    emit(GenerationChunk.Messages(messages))
+                }
                 try {
                     generateInternal(
                         assistant = assistant,
@@ -1083,6 +1091,73 @@ class GenerationHandler(
                 }
             )
         ) + nonTextParts
+    }
+
+    /**
+     * 循环内熔断用的本地压缩：把最早的非工具链历史压缩为一条摘要消息，
+     * 保留最近 [keepRecent] 条 + 当前工具链完整。纯本地操作（不调 LLM），
+     * 只是把旧文本截断拼接，防止工具循环把上下文无限撑大。
+     * 系统消息始终保留在最前面。
+     */
+    private fun compressMessagesForLoop(
+        messages: List<UIMessage>,
+        keepRecent: Int,
+    ): List<UIMessage> {
+        if (messages.size <= keepRecent + 2) return messages
+        // 从末尾往前找到工具链起点：凡是包含 Tool part 的消息都属于当前工具链，必须保留
+        var chainStart = messages.lastIndex
+        for (i in messages.indices.reversed()) {
+            val hasTool = messages[i].parts.any { it is UIMessagePart.Tool }
+            if (hasTool) {
+                chainStart = i
+            } else if (i < chainStart) {
+                break
+            }
+        }
+        val minKeepIndex = (messages.size - keepRecent).coerceAtLeast(0)
+        val keepFrom = minOf(chainStart, minKeepIndex)
+        val firstIsSystem = messages.firstOrNull()?.role == MessageRole.SYSTEM
+        val compressStart = if (firstIsSystem) 1 else 0
+        val toCompress = messages.subList(compressStart, keepFrom)
+        if (toCompress.isEmpty()) return messages
+
+        val summaryText = buildString {
+            append("【历史摘要】以下为较早消息的摘要（为控制上下文长度已压缩）：\n")
+            toCompress.takeLast(12).forEach { m ->
+                val text = m.parts.filterIsInstance<UIMessagePart.Text>()
+                    .joinToString(" ") { it.text }
+                if (text.isNotBlank()) {
+                    append("• ").append(text.take(120)).append("\n")
+                }
+            }
+            append("（共 ").append(toCompress.size).append(" 条旧消息已省略）")
+        }
+        val summary = UIMessage(
+            role = MessageRole.USER,
+            parts = listOf(UIMessagePart.Text(summaryText)),
+        )
+        return buildList {
+            if (firstIsSystem) add(messages.first())
+            add(summary)
+            addAll(messages.subList(keepFrom, messages.size))
+        }
+    }
+
+    /** 粗略估算一条消息的 token 数，用于循环内熔断的阈值判断。 */
+    private fun estimateTokens(message: UIMessage): Int {
+        var tokens = 8
+        for (part in message.parts) {
+            tokens += when (part) {
+                is UIMessagePart.Text -> part.text.length / 4 + 4
+                is UIMessagePart.Reasoning -> part.reasoning.length / 4 + 4
+                is UIMessagePart.Image -> 300
+                is UIMessagePart.Video -> 600
+                is UIMessagePart.Audio -> 500
+                is UIMessagePart.Document -> 800
+                else -> 32
+            }
+        }
+        return tokens
     }
 
     fun translateText(

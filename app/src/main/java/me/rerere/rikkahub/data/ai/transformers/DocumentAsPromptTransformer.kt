@@ -24,7 +24,8 @@ object DocumentAsPromptTransformer : InputMessageTransformer {
                         val documents = filterIsInstance<UIMessagePart.Document>()
                         if (documents.isNotEmpty()) {
                             documents.forEach { document ->
-                                val content = readDocumentContent(document)
+                                val rawContent = readDocumentContent(document)
+                                val content = truncateForContext(rawContent)
                                 val path = resolveWorkspacePath(document)
                                 val pathAttr = path?.let { " path=\"$it\"" } ?: ""
                                 val prompt = """
@@ -66,6 +67,23 @@ object DocumentAsPromptTransformer : InputMessageTransformer {
         if (file.parentFile?.name != "upload") return null
         return "/upload/${file.name}"
     }
+
+    /**
+     * 长文档截断（省Token）：超过 [MAX_DOCUMENT_CHARS]（6000）字符时，
+     * 保留开头和结尾各一段，中间省略，并提示 AI 可用 workspace/文件工具读取原文。
+     */
+    private fun truncateForContext(text: String): String {
+        if (text.length <= MAX_DOCUMENT_CHARS) return text
+        val head = text.take(MAX_DOCUMENT_CHARS / 2)
+        val tail = text.takeLast(MAX_DOCUMENT_CHARS / 2)
+        return buildString {
+            append(head)
+            append("\n\n...[文档内容过长，已截断：全文 ${text.length} 字符，此处仅保留头尾各 ${MAX_DOCUMENT_CHARS / 2} 字符]...\n\n")
+            append(tail)
+        }
+    }
+
+    private const val MAX_DOCUMENT_CHARS = 6000
 
     private fun readDocumentContent(document: UIMessagePart.Document): String {
         val file = runCatching { document.url.toUri().toFile() }.getOrNull()

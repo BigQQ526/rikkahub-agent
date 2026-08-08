@@ -433,6 +433,11 @@ class ChatService(
                 )
                 saveConversation(conversationId, withUser)
 
+                // 自动压缩（省Token）：消息落库后、开始生成前，检查是否需要压缩旧历史
+                if (answer) {
+                    maybeAutoCompress(conversationId)
+                }
+
                 // Phase 16 — fast-path router. If the assistant has it enabled and the user's
                 // message matches a deterministic intent, run the matching tool and inject the
                 // result as a synthetic assistant message — skipping the LLM entirely.
@@ -1358,6 +1363,52 @@ class ChatService(
         )
 
         saveConversation(conversationId, newConversation)
+    }
+
+    /**
+     * 自动压缩（省Token）：在用户发消息后自动检查会话 token 估算值，
+     * 超过阈值时将旧消息压缩成摘要、保留最近 N 条，避免上下文无限膨胀烧 token。
+     * 全部走设置项，可关闭。
+     */
+    private suspend fun maybeAutoCompress(conversationId: Uuid) {
+        runCatching {
+            val settings = settingsStore.settingsFlow.first()
+            if (!settings.autoCompressEnabled) return
+            val conversation = getOrCreateSession(conversationId).state.value
+            val messages = conversation.currentMessages
+            // 消息太少或没超过保留条数时直接跳过（compressConversation 内部也会报 not-enough）
+            if (messages.size <= settings.autoCompressKeepRecent + 2) return
+            val totalTokens = messages.sumOf { estimateTokens(it) }
+            if (totalTokens <= settings.autoCompressThreshold) return
+            Logging.log(TAG, "maybeAutoCompress: $totalTokens tokens > ${settings.autoCompressThreshold}, compressing")
+            compressConversation(
+                conversationId = conversationId,
+                conversation = conversation,
+                additionalPrompt = "Automatic compression: this conversation exceeded the token threshold. " +
+                    "Summarize the older messages concisely, preserving key facts, decisions and unresolved items.",
+                targetTokens = (settings.autoCompressThreshold / 4).coerceAtLeast(2000),
+                keepRecentMessages = settings.autoCompressKeepRecent,
+            )
+        }.onFailure { e ->
+            Logging.log(TAG, "maybeAutoCompress skipped: $e")
+        }
+    }
+
+    /** 粗略估算一条消息的 token 数（字符数/4 + 各部件开销），用于自动压缩的阈值判断。 */
+    private fun estimateTokens(message: UIMessage): Int {
+        var tokens = 8
+        for (part in message.parts) {
+            tokens += when (part) {
+                is UIMessagePart.Text -> part.text.length / 4 + 4
+                is UIMessagePart.Reasoning -> part.reasoning.length / 4 + 4
+                is UIMessagePart.Image -> 300
+                is UIMessagePart.Video -> 600
+                is UIMessagePart.Audio -> 500
+                is UIMessagePart.Document -> 800
+                else -> 32
+            }
+        }
+        return tokens
     }
 
     // ---- 通知 ----

@@ -135,6 +135,12 @@ class SettingsStore(
         val COMPRESS_MODEL = stringPreferencesKey("compress_model")
         val COMPRESS_PROMPT = stringPreferencesKey("compress_prompt")
 
+        // 自动压缩（省Token）
+        val AUTO_COMPRESS_ENABLED = booleanPreferencesKey("auto_compress_enabled")
+        val AUTO_COMPRESS_THRESHOLD = intPreferencesKey("auto_compress_threshold")
+        val AUTO_COMPRESS_KEEP_RECENT = intPreferencesKey("auto_compress_keep_recent")
+        val AUTO_COMPRESS_HARD_LIMIT = intPreferencesKey("auto_compress_hard_limit_tokens")
+
         // 提供商
         val PROVIDERS = stringPreferencesKey("providers")
         // IDs of built-in providers the user explicitly deleted; the re-seed pass
@@ -230,6 +236,10 @@ class SettingsStore(
                 ocrPrompt = preferences[OCR_PROMPT] ?: DEFAULT_OCR_PROMPT,
                 compressModelId = preferences[COMPRESS_MODEL]?.let { runCatching { Uuid.parse(it) }.getOrNull() } ?: DEFAULT_AUTO_MODEL_ID,
                 compressPrompt = preferences[COMPRESS_PROMPT] ?: DEFAULT_COMPRESS_PROMPT,
+                autoCompressEnabled = preferences[AUTO_COMPRESS_ENABLED] != false,
+                autoCompressThreshold = preferences[AUTO_COMPRESS_THRESHOLD] ?: 40000,
+                autoCompressKeepRecent = preferences[AUTO_COMPRESS_KEEP_RECENT] ?: 32,
+                autoCompressHardLimitTokens = preferences[AUTO_COMPRESS_HARD_LIMIT] ?: 120000,
                 assistantId = preferences[SELECT_ASSISTANT]?.let { runCatching { Uuid.parse(it) }.getOrNull() }
                     ?: DEFAULT_ASSISTANT_ID,
                 assistantTags = preferences[ASSISTANT_TAGS]?.let { raw ->
@@ -576,6 +586,10 @@ class SettingsStore(
             preferences[OCR_PROMPT] = settings.ocrPrompt
             preferences[COMPRESS_MODEL] = settings.compressModelId.toString()
             preferences[COMPRESS_PROMPT] = settings.compressPrompt
+            preferences[AUTO_COMPRESS_ENABLED] = settings.autoCompressEnabled
+            preferences[AUTO_COMPRESS_THRESHOLD] = settings.autoCompressThreshold
+            preferences[AUTO_COMPRESS_KEEP_RECENT] = settings.autoCompressKeepRecent
+            preferences[AUTO_COMPRESS_HARD_LIMIT] = settings.autoCompressHardLimitTokens
 
             preferences[PROVIDERS] = JsonInstant.encodeToString(settings.providers)
             preferences[DELETED_BUILTIN_PROVIDER_IDS] = JsonInstant.encodeToString(
@@ -752,6 +766,10 @@ data class Settings(
     val ocrPrompt: String = DEFAULT_OCR_PROMPT,
     val compressModelId: Uuid = Uuid.random(),
     val compressPrompt: String = DEFAULT_COMPRESS_PROMPT,
+    val autoCompressEnabled: Boolean = true,
+    val autoCompressThreshold: Int = 40000,
+    val autoCompressKeepRecent: Int = 32,
+    val autoCompressHardLimitTokens: Int = 120000,
     val assistantId: Uuid = DEFAULT_ASSISTANT_ID,
     val providers: List<ProviderSetting> = DEFAULT_PROVIDERS,
     /**

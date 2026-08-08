@@ -1821,6 +1821,14 @@
   <string name="tool_ui_shell_default">Shell</string>
   <string name="tool_ui_shell_timeout">timeout</string>
   <string name="tool_ui_shell_exit">exit %s</string>
+  <string name="tool_ui_shell_running">running…</string>
+  <string name="setting_auto_compress_title">Auto compress (save tokens)</string>
+  <string name="setting_auto_compress_enable">Enable auto compress</string>
+  <string name="setting_auto_compress_enable_desc">Compress old messages into a summary when the conversation exceeds the token threshold.</string>
+  <string name="setting_auto_compress_threshold">Trigger threshold</string>
+  <string name="setting_auto_compress_threshold_value">%1$d tokens</string>
+  <string name="setting_auto_compress_keep_recent">Keep recent messages</string>
+  <string name="setting_auto_compress_keep_recent_value">%1$d messages</string>
   <string name="tool_ui_speaking">Speaking: %s</string>
   <string name="tool_ui_replay">Replay</string>
   <string name="tool_ui_delete_memory">Delete memory</string>
