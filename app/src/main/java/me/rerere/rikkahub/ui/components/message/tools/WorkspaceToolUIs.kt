@@ -432,6 +432,7 @@ private fun ShellExitStatusRunning() {
     )
 }
 
+@Composable
 private fun ShellExitStatus(content: JsonElement, style: androidx.compose.ui.text.TextStyle) {
     val exitCode = content.int("exitCode")
     val timedOut = content.boolean("timedOut") ?: false
