@@ -38,7 +38,13 @@ data class RootfsInstallProgress(
 
 data class WorkspaceConfig(
     val maxReadBytes: Long = 512 * 1024,
-    val maxWriteBytes: Long = 2 * 1024 * 1024,
+    /**
+     * 单次写入/导入的字节上限。
+     *
+     * 设为 0 或负数表示不限制: 导入走 [WorkspaceFileSystem.importBytes] 的流式写入,
+     * 不会把整个文件读进内存, 因此放开上限也不会导致 OOM。
+     */
+    val maxWriteBytes: Long = 0L,
     val maxListEntries: Int = 500,
     val maxSearchResults: Int = 100,
 )

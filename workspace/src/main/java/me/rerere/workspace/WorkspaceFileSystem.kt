@@ -42,8 +42,10 @@ class WorkspaceFileSystem(
         charset: Charset = StandardCharsets.UTF_8,
     ): WorkspaceFileEntry {
         val bytes = text.toByteArray(charset)
-        require(bytes.size <= config.maxWriteBytes) {
-            "Content is too large to write: ${bytes.size} bytes"
+        if (config.maxWriteBytes > 0) {
+            require(bytes.size <= config.maxWriteBytes) {
+                "Content is too large to write: ${bytes.size} bytes"
+            }
         }
         val file = resolvePath(root, path)
         require(!file.exists() || overwrite) { "File already exists: $path" }
@@ -66,7 +68,9 @@ class WorkspaceFileSystem(
                         val read = input.read(buffer)
                         if (read < 0) break
                         total += read
-                        require(total <= config.maxWriteBytes) { "Content is too large to write: $total bytes" }
+                        if (config.maxWriteBytes > 0) {
+                            require(total <= config.maxWriteBytes) { "Content is too large to write: $total bytes" }
+                        }
                         output.write(buffer, 0, read)
                     }
                 }
